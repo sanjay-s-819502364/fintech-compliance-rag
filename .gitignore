@@ -1,0 +1,21 @@
+# Secrets / config
+.env
+*.pem
+*credentials*
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Regulatory corpus (not redistributed — see SOURCES.md)
+corpus/
+
+# Eval run output (contains live kb_id/guardrail_id; regenerate via run_generation.py)
+eval/results/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store

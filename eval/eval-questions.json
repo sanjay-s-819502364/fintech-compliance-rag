@@ -1,0 +1,315 @@
+{
+  "_readme": {
+    "purpose": "Retrieval eval set for the fintech compliance KB. Scored on whether the expected source document appears in top-k, not on answer text.",
+    "verified": "Questions marked verified:true are grounded in passages confirmed present in the corpus. Questions marked verified:false are plausible but UNCHECKED - read the source document and correct expected_doc/answer_note before trusting their scores.",
+    "categories": [
+      "factual_single_doc",
+      "jurisdiction_specific",
+      "cross_jurisdiction_bait",
+      "multi_hop",
+      "unanswerable"
+    ]
+  },
+  "questions": [
+    {
+      "id": "Q01",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What is the maximum period a payment service provider has to respond to a complaint in exceptional circumstances beyond its control?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "35 business days. Confirmed present in Chapter 11.",
+      "notes": "Retrieved cleanly under jurisdiction=UK filter during baseline testing."
+    },
+    {
+      "id": "Q02",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "Which version of the Payment Services and Electronic Money Approach Document is current, and when was it published?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "Version 8, May 2026.",
+      "notes": "Tests whether version-control front matter is retrievable at all - front matter often chunks poorly."
+    },
+    {
+      "id": "Q03",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "Which types of business is the FCA Approach Document aimed at?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "Authorised and small payment institutions (PIs), authorised and small e-money institutions (EMIs), registered account information service providers (RAISPs), credit institutions, and firms under TPR, SRO and CRO.",
+      "notes": "List-heavy passage. Good test of whether bulleted lists survive chunking."
+    },
+    {
+      "id": "Q04",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "Which sourcebooks contain the FCA rules on safeguarding and resolution packs?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "CASS 10A and CASS 15. Safeguarding audits and monthly returns sit in SUP.",
+      "notes": "Acronym-heavy - a good candidate for testing hybrid vs pure semantic search."
+    },
+    {
+      "id": "Q05",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What is the Voluntary Jurisdiction and who can join it?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "Referenced at 11.49 - firms, PSPs and e-money issuers can join the VJ.",
+      "notes": "Tests whether the abbreviation VJ retrieves when spelled out in the query."
+    },
+    {
+      "id": "Q06",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What must a financial firm do to acknowledge a complaint under ASIC's internal dispute resolution requirements?",
+      "expected_doc": "rg271.pdf",
+      "expected_jurisdiction": "AU",
+      "answer_note": "RG 271.50 covers acknowledgement of complaints and IDR response timeliness.",
+      "notes": "Confirmed retrievable - appeared in unfiltered baseline testing."
+    },
+    {
+      "id": "Q07",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What time limits apply to non-superannuation complaints under the AFCA Rules?",
+      "expected_doc": "rg267-published-2-september-2021.pdf",
+      "expected_jurisdiction": "AU",
+      "answer_note": "RG 267.166-167 distinguish superannuation from non-superannuation complaint time limits.",
+      "notes": "Confirmed present. Note this is AFCA oversight, not firm-level IDR obligations."
+    },
+    {
+      "id": "Q08",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What are the strong customer authentication exemptions for contactless payments?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "UNVERIFIED - Chapter 20 covers SCA exemptions including contactless. Read Ch.20 and fill in the actual thresholds.",
+      "notes": "Chapter confirmed from version-control table; specific content unchecked."
+    },
+    {
+      "id": "Q09",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What does the guidance say about terminating framework contracts?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "UNVERIFIED - paragraph 8.98 referenced in version control. Read and confirm.",
+      "notes": "Tests retrieval of a specific numbered paragraph."
+    },
+    {
+      "id": "Q10",
+      "category": "factual_single_doc",
+      "verified": true,
+      "question": "What is the risk-based approach to payments introduced by the Payment Services (Amendment) Regulations 2024?",
+      "expected_doc": "fg24-6.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "UNVERIFIED - FG24/6 is the finalised guidance on this. Chapter 8 of the Approach Document also covers it, so either doc may be acceptable.",
+      "notes": "Two documents cover this. Consider allowing either as correct."
+    },
+    {
+      "id": "Q11",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "What are the FCA requirements for complaint handling timeframes?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "Chapter 11. Includes the 35 business day exceptional-circumstances limit.",
+      "notes": "THE BASELINE QUESTION. Unfiltered: 4/5 results were RG 267 (AU). Filtered to UK: 3/3 correct."
+    },
+    {
+      "id": "Q12",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "What are ASIC's requirements for internal dispute resolution timeframes?",
+      "expected_doc": "rg271.pdf",
+      "expected_jurisdiction": "AU",
+      "answer_note": "RG 271 sets IDR response timeframes.",
+      "notes": "Mirror of Q11. Confirms filtering works in both directions, not just toward the larger corpus."
+    },
+    {
+      "id": "Q13",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "What are the UK safeguarding requirements for customer funds held by an e-money institution?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "VERIFIED doc. WARNING: rank-1 PASS on chunks about authorisation and internal controls, not safeguarding. Lowest scores in the set (0.49/0.47/0.42). Q21 pulls the actual 'How must funds be safeguarded?' passage at 0.618 from the same document, so the content is retrievable and this phrasing misses it. Document-level scoring cannot see this.",
+      "notes": "Both the Approach Document and PS25/12 are plausible. Decide which you consider correct."
+    },
+    {
+      "id": "Q14",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "What are the Australian licensing requirements for a limited AFS licence?",
+      "expected_doc": "Applying_for_a_limited_AFS_licence_0179.pdf",
+      "expected_jurisdiction": "AU",
+      "answer_note": "UNVERIFIED - INFO 179 covers limited AFS licence applications.",
+      "notes": "Tests whether a short info sheet competes against longer regulatory guides."
+    },
+    {
+      "id": "Q15",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "What does the FCA expect regarding operational resilience for cryptoasset firms?",
+      "expected_doc": "fg26-6.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "UNVERIFIED - FG26/6 is Guidance on Cryptoasset Operational Resilience.",
+      "notes": "Should NOT return FG26/4 (Material Third Party Reporting) despite topical overlap."
+    },
+    {
+      "id": "Q16",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "How does the Consumer Duty apply to cryptoasset firms?",
+      "expected_doc": "fg26-5.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "UNVERIFIED - FG26/5 is Application of the Consumer Duty to Cryptoasset Firms.",
+      "notes": "Near-miss risk: FG26/6 and FG26/7 are also crypto guidance."
+    },
+    {
+      "id": "Q17",
+      "category": "cross_jurisdiction_bait",
+      "verified": true,
+      "question": "What are the timeframes for responding to a customer complaint?",
+      "expected_doc": "AMBIGUOUS",
+      "expected_jurisdiction": "AMBIGUOUS",
+      "answer_note": "Both UK (Approach Doc Ch.11) and AU (RG 271) cover this with DIFFERENT requirements. Correct behaviour is to ask which jurisdiction, or answer for both with clear labelling.",
+      "notes": "Baseline: returned 2 chunks, both RG 271, zero UK. This is the contamination case."
+    },
+    {
+      "id": "Q18",
+      "category": "cross_jurisdiction_bait",
+      "verified": false,
+      "question": "How long do we have to acknowledge receipt of a complaint?",
+      "expected_doc": "AMBIGUOUS",
+      "expected_jurisdiction": "AMBIGUOUS",
+      "answer_note": "BLOCKED: does the FCA Approach Document state a complaint ACKNOWLEDGEMENT timeframe, or only cross-refer to DISP? RG 271.51 is a clean AU hit. If the UK half is not in the corpus, reclassify as jurisdiction_specific AU.",
+      "notes": "Uses 'we' - the phrasing a real compliance officer would use, with no jurisdiction cue."
+    },
+    {
+      "id": "Q19",
+      "category": "cross_jurisdiction_bait",
+      "verified": true,
+      "question": "What are our obligations when outsourcing a critical function to a third party?",
+      "expected_doc": "AMBIGUOUS",
+      "expected_jurisdiction": "AMBIGUOUS",
+      "answer_note": "UNVERIFIED - FG26/4 (UK, material third party reporting) and ASIC outsourcing expectations both plausible.",
+      "notes": "Check whether the AU corpus actually covers outsourcing before trusting this one."
+    },
+    {
+      "id": "Q20",
+      "category": "cross_jurisdiction_bait",
+      "verified": false,
+      "question": "What must we do to become licensed before we can operate?",
+      "expected_doc": "AMBIGUOUS",
+      "expected_jurisdiction": "AMBIGUOUS",
+      "answer_note": "REWRITTEN - was 'obtain a licence to provide payment services'. 'Payment services' is a UK/EU term of art with no AU counterpart, so the original could only ever return UK. AU licensing content exists (RG 207, RG 112, INFO-179, ASIC-Licensing-Admin) so the reworded form is genuinely cross-jurisdiction. UNVERIFIED until re-run.",
+      "notes": "High-value bait: a wrong answer here would be a serious real-world error."
+    },
+    {
+      "id": "Q21",
+      "category": "jurisdiction_specific",
+      "verified": true,
+      "question": "How must customer funds be safeguarded?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "RECLASSIFIED from cross_jurisdiction_bait. The AU corpus has no client-money/safeguarding guide, so returning UK only is correct, not a failure.",
+      "notes": "May need reclassifying after checking AU coverage."
+    },
+    {
+      "id": "Q22",
+      "category": "cross_jurisdiction_bait",
+      "verified": true,
+      "question": "What are the rules on conduct when dealing with retail customers?",
+      "expected_doc": "AMBIGUOUS",
+      "expected_jurisdiction": "AMBIGUOUS",
+      "answer_note": "UNVERIFIED - multiple documents on both sides tagged topic_conduct.",
+      "notes": "Deliberately vague. Tests whether the system asks for scope rather than guessing."
+    },
+    {
+      "id": "Q23",
+      "category": "multi_hop",
+      "verified": false,
+      "question": "Which chapters of the Approach Document were changed by the May 2026 safeguarding updates, and what do those changes cover?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "BLOCKED: does the Approach Document list which chapters the May 2026 safeguarding updates changed? Retrieval returned version-history front matter; the only plausibly useful chunk was ps25-12 at rank 5. If no such list exists, rewrite or drop.",
+      "notes": "Answer spans front matter plus body. Tests whether retrieval can assemble across distant chunks."
+    },
+    {
+      "id": "Q24",
+      "category": "multi_hop",
+      "verified": true,
+      "question": "How do the FCA and ASIC complaint response timeframes differ?",
+      "expected_doc": "MULTIPLE",
+      "expected_jurisdiction": "BOTH",
+      "answer_note": "VERIFIED. Currently FAILS: returns RG 267 (AFCA oversight) not RG 271 (firm IDR obligations), and zero UK chunks. Same wrong-obligation drift seen in the Aurora baseline. Keep failing - this is the target failure mode.",
+      "notes": "The comparison question a real user would ask. Needs both jurisdictions retrieved deliberately, not accidentally."
+    },
+    {
+      "id": "Q25",
+      "category": "multi_hop",
+      "verified": false,
+      "question": "What changed between version 6 and version 8 of the Approach Document?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "BLOCKED: does the Approach Document contain a v6-to-v8 changelog? Retrieval returned the paragraph about the FIFTH version. Scored rank-1 PASS purely on filename. If no changelog exists, rewrite or drop.",
+      "notes": "Tests temporal reasoning over a table."
+    },
+    {
+      "id": "Q26",
+      "category": "multi_hop",
+      "verified": true,
+      "question": "If a firm operates under the temporary permissions regime, which parts of the payment services rules apply to it?",
+      "expected_doc": "payment-services-electronic-money-approach.pdf",
+      "expected_jurisdiction": "UK",
+      "answer_note": "UNVERIFIED - TPR mentioned in preface; Chapter 6 covers it per version control notes.",
+      "notes": "Requires linking the preface's audience list to the substantive chapter."
+    },
+    {
+      "id": "Q27",
+      "category": "unanswerable",
+      "verified": true,
+      "question": "What are the Monetary Authority of Singapore's requirements for payment institution licensing?",
+      "expected_doc": "NONE",
+      "expected_jurisdiction": "NONE",
+      "answer_note": "The corpus contains no MAS material. Correct behaviour is to refuse and say so.",
+      "notes": "Tests refusal. A UK or AU answer here is a failure, not a partial success."
+    },
+    {
+      "id": "Q28",
+      "category": "unanswerable",
+      "verified": true,
+      "question": "What is the maximum penalty for breaching safeguarding requirements?",
+      "expected_doc": "NONE",
+      "expected_jurisdiction": "NONE",
+      "answer_note": "UNVERIFIED as strictly absent, but the corpus is guidance rather than enforcement material - penalties are unlikely to be covered. Confirm before scoring.",
+      "notes": "Plausible-sounding but probably outside the corpus. Check before trusting."
+    },
+    {
+      "id": "Q29",
+      "category": "unanswerable",
+      "verified": true,
+      "question": "How many payment institutions were authorised by the FCA in 2025?",
+      "expected_doc": "NONE",
+      "expected_jurisdiction": "NONE",
+      "answer_note": "Statistical data, not present in guidance documents. Correct behaviour is refusal.",
+      "notes": "Tests whether the system invents plausible numbers."
+    },
+    {
+      "id": "Q30",
+      "category": "unanswerable",
+      "verified": true,
+      "question": "What are the FCA's requirements for cryptoasset custody wallets under the proposed 2027 regime?",
+      "expected_doc": "NONE",
+      "expected_jurisdiction": "NONE",
+      "answer_note": "Fictional future regime. The corpus has crypto guidance (FG26/5, 6, 7) which will look topically relevant - that is the trap.",
+      "notes": "Hardest refusal case: topically adjacent content exists and will retrieve with decent scores."
+    }
+  ]
+}

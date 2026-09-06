@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python src/*.py:*)",
+      "Bash(python3 src/*.py:*)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(pip install:*)"
+    ],
+    "ask": [],
+    "deny": []
+  },
+  "env": {},
+  "hooks": {}
+}
