@@ -1,0 +1,15 @@
+{
+  "name": "fintech-compliance-rag-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Lambda handler exposing the compliance RAG pipeline over HTTP",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.895.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.895.0",
+    "@aws-sdk/client-ssm": "^3.895.0"
+  }
+}

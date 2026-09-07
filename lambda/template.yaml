@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Public HTTP endpoint for the fintech-compliance-rag pipeline —
+  retrieve (managed Knowledge Base) + generate (Bedrock Converse).
+
+Parameters:
+  KnowledgeBaseId:
+    Type: String
+    Description: Bedrock managed Knowledge Base ID (from BEDROCK_KNOWLEDGE_BASE_ID in .env)
+  ModelArn:
+    Type: String
+    Description: Foundation model ARN for generation, e.g. Nova Lite
+    Default: arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0
+  TopK:
+    Type: Number
+    Default: 5
+  ApiKeyParameterName:
+    Type: String
+    Description: >
+      Name of a pre-existing SecureString SSM parameter holding the API key.
+      CloudFormation cannot create SecureString parameters, so create this
+      yourself first: aws ssm put-parameter --name <this value> --type
+      SecureString --value "$(openssl rand -hex 32)"
+    Default: /fintech-compliance-rag/api-key
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures: [arm64]
+    Timeout: 25  # comfortably under HTTP API's hard 30s integration timeout
+    MemorySize: 512
+
+Resources:
+  AskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handler.handler
+      Environment:
+        Variables:
+          KNOWLEDGE_BASE_ID: !Ref KnowledgeBaseId
+          MODEL_ARN: !Ref ModelArn
+          TOP_K: !Ref TopK
+          API_KEY_PARAM_NAME: !Ref ApiKeyParameterName
+      Policies:
+        - Statement:
+            - Sid: BedrockRetrieveAndGenerate
+              Effect: Allow
+              Action:
+                - bedrock:Retrieve
+                - bedrock:InvokeModel
+              Resource:
+                - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:knowledge-base/${KnowledgeBaseId}
+                - !Ref ModelArn
+            - Sid: ReadApiKeyParameter
+              Effect: Allow
+              Action: ssm:GetParameter
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${ApiKeyParameterName}
+            - Sid: DecryptApiKeyParameter
+              Effect: Allow
+              # SecureString parameters encrypted with the default SSM key
+              # still require an explicit kms:Decrypt grant on the caller's
+              # identity policy — the AWS-managed key's own policy alone
+              # isn't sufficient authorization.
+              Action: kms:Decrypt
+              Resource: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/ssm
+      Events:
+        Ask:
+          Type: HttpApi
+          Properties:
+            Path: /ask
+            Method: post
+            ApiId: !Ref HttpApi
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowMethods: ["POST", "OPTIONS"]
+        AllowHeaders: ["content-type", "x-api-key"]
+
+Outputs:
+  ApiUrl:
+    Description: Invoke URL for the /ask endpoint
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/ask

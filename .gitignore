@@ -17,5 +17,12 @@ __pycache__/
 .venv/
 venv/
 
+# Node (lambda/src/ — the Lambda)
+node_modules/
+.aws-sam/
+
+# Contains live resource IDs (kb_id, etc.) — same reasoning as eval/results/
+lambda/samconfig.toml
+
 # OS
 .DS_Store
