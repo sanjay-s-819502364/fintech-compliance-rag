@@ -207,12 +207,39 @@ function showResult(data) {
 
   $('badge').textContent = 'ANSWERED';
   $('badge').className = 'badge answered';
-  $('answerText').textContent = data.answer;
 
-  $('sources').innerHTML = (data.retrieved || []).map((r) => `
+  // The model cites by chunk position (1-based, matching the order
+  // formatPassages() in generate.mjs numbered them). Several chunks can
+  // share one filename — the KB doesn't expose page numbers to tell them
+  // apart (checked the raw retrieval metadata — none present) — so
+  // renumber by unique document instead: first document to appear becomes
+  // [1], next new one [2], etc. citationMap translates original chunk
+  // number -> new document number; docsInOrder is the resulting per-
+  // document list, in the same first-appearance order as the new numbers.
+  const citationMap = new Map();
+  const docsInOrder = [];
+  (data.retrieved || []).forEach((r, i) => {
+    const originalNum = i + 1;
+    let doc = docsInOrder.find((d) => d.filename === r.filename);
+    if (!doc) {
+      doc = { filename: r.filename, jurisdiction: r.jurisdiction, bestScore: r.score, newNum: docsInOrder.length + 1 };
+      docsInOrder.push(doc);
+    } else if (r.score != null && (doc.bestScore == null || r.score > doc.bestScore)) {
+      doc.bestScore = r.score;
+    }
+    citationMap.set(originalNum, doc.newNum);
+  });
+
+  const renumberedAnswer = data.answer.replace(/\[(\d+)\]/g, (match, numStr) => {
+    const newNum = citationMap.get(parseInt(numStr, 10));
+    return newNum != null ? `[${newNum}]` : match; // leave out-of-range citations untouched
+  });
+  $('answerText').textContent = renumberedAnswer;
+
+  $('sources').innerHTML = docsInOrder.map((d) => `
     <li>
-      <span>${escapeHtml(r.filename)}</span>
-      <span class="jur-tag ${r.jurisdiction.toLowerCase()}">${escapeHtml(r.jurisdiction)}${r.score != null ? ' &middot; ' + r.score.toFixed(3) : ''}</span>
+      <span>[${d.newNum}] ${escapeHtml(d.filename)}</span>
+      <span class="jur-tag ${d.jurisdiction.toLowerCase()}">${escapeHtml(d.jurisdiction)}${d.bestScore != null ? ' &middot; best ' + d.bestScore.toFixed(3) : ''}</span>
     </li>
   `).join('');
 }
