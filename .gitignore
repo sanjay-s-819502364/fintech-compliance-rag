@@ -4,6 +4,7 @@
 *credentials*
 .claude/settings.local.json
 CLAUDE.local.md
+ui/config.js
 
 # Regulatory corpus (not redistributed — see SOURCES.md)
 corpus/

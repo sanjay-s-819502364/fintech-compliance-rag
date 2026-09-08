@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fintech Compliance RAG</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f5;
+    --panel: #ffffff;
+    --border: #ddd;
+    --text: #1a1a1a;
+    --muted: #666;
+    --uk: #1d4ed8;
+    --au: #b45309;
+    --error: #b91c1c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17181a;
+      --panel: #232427;
+      --border: #3a3b3e;
+      --text: #eee;
+      --muted: #9a9a9a;
+      --uk: #7aa2ff;
+      --au: #e0a458;
+      --error: #f28b82;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  main { width: 100%; max-width: 720px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  input, textarea, select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .row { display: flex; gap: 12px; margin-bottom: 14px; }
+  .row > div { flex: 1; }
+  .field { margin-bottom: 14px; }
+  button {
+    background: var(--uk);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .result { display: none; }
+  .answer { white-space: pre-wrap; line-height: 1.5; font-size: 15px; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .badge.answered { background: #dcfce7; color: #166534; }
+  .badge.no_chunks { background: #fef9c3; color: #854d0e; }
+  .badge.error { background: #fee2e2; color: var(--error); }
+  ul.sources { list-style: none; padding: 0; margin: 12px 0 0; font-size: 13px; }
+  ul.sources li {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .jur-tag { font-weight: 700; font-size: 11px; }
+  .jur-tag.uk { color: var(--uk); }
+  .jur-tag.au { color: var(--au); }
+  .error-box { color: var(--error); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fintech Compliance RAG</h1>
+  <p class="sub">UK FCA / AU ASIC regulatory Q&amp;A — retrieval-grounded, refuses when sources don't cover the question.</p>
+
+  <div class="panel">
+    <div class="field">
+      <label for="question">Question</label>
+      <textarea id="question" placeholder="What are the requirements for safeguarding client funds?"></textarea>
+    </div>
+    <div class="row">
+      <div>
+        <label for="jurisdiction">Jurisdiction filter</label>
+        <select id="jurisdiction">
+          <option value="">None (search both)</option>
+          <option value="UK">UK</option>
+          <option value="AU">AU</option>
+        </select>
+      </div>
+    </div>
+    <button id="askBtn">Ask</button>
+  </div>
+
+  <div class="panel result" id="result">
+    <span class="badge" id="badge"></span>
+    <div class="answer" id="answerText"></div>
+    <ul class="sources" id="sources"></ul>
+  </div>
+</main>
+
+<script src="config.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+$('askBtn').addEventListener('click', async () => {
+  if (!window.RAG_CONFIG || !window.RAG_CONFIG.apiUrl || !window.RAG_CONFIG.apiKey) {
+    showError('config.js is missing or incomplete — copy config.example.js to config.js and fill in your API URL and key.');
+    return;
+  }
+  const { apiUrl, apiKey } = window.RAG_CONFIG;
+  const question = $('question').value.trim();
+  const jurisdiction = $('jurisdiction').value;
+
+  if (!question) {
+    showError('Enter a question first.');
+    return;
+  }
+
+  $('askBtn').disabled = true;
+  $('askBtn').textContent = 'Asking...';
+
+  try {
+    const body = { question };
+    if (jurisdiction) body.jurisdiction = jurisdiction;
+
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError(data.error || `Request failed (${res.status})`);
+      return;
+    }
+
+    showResult(data);
+  } catch (err) {
+    showError('Network error: ' + err.message);
+  } finally {
+    $('askBtn').disabled = false;
+    $('askBtn').textContent = 'Ask';
+  }
+});
+
+function showError(message) {
+  $('result').style.display = 'block';
+  $('badge').textContent = 'ERROR';
+  $('badge').className = 'badge error';
+  $('answerText').innerHTML = '';
+  $('answerText').className = 'error-box';
+  $('answerText').textContent = message;
+  $('sources').innerHTML = '';
+}
+
+function showResult(data) {
+  $('result').style.display = 'block';
+  $('answerText').className = 'answer';
+
+  if (data.outcome === 'NO_CHUNKS') {
+    $('badge').textContent = 'NO MATCHING SOURCES';
+    $('badge').className = 'badge no_chunks';
+    $('answerText').textContent = 'Nothing in the corpus covers this question, so no answer was generated.';
+    $('sources').innerHTML = '';
+    return;
+  }
+
+  $('badge').textContent = 'ANSWERED';
+  $('badge').className = 'badge answered';
+  $('answerText').textContent = data.answer;
+
+  $('sources').innerHTML = (data.retrieved || []).map((r) => `
+    <li>
+      <span>${escapeHtml(r.filename)}</span>
+      <span class="jur-tag ${r.jurisdiction.toLowerCase()}">${escapeHtml(r.jurisdiction)}${r.score != null ? ' &middot; ' + r.score.toFixed(3) : ''}</span>
+    </li>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
