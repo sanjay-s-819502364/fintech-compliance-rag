@@ -74,6 +74,8 @@
   }
   button:disabled { opacity: 0.5; cursor: default; }
   .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .sources a { color: var(--uk); text-decoration: none; }
+  .sources a:hover { text-decoration: underline; }
   .result { display: none; }
   .answer { white-space: pre-wrap; line-height: 1.5; font-size: 15px; }
   .badge {
@@ -136,6 +138,30 @@
 <script src="config.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
+
+const FCA_SEARCH = 'https://www.fca.org.uk/publications/search-results';
+const ASIC_FINDER = 'https://asic.gov.au/regulatory-resources/find-a-document/';
+
+// Links to the regulators' own hosted copies (per SOURCES.md), never to our
+// private S3 mirror — that bucket is intentionally not public (confirmed:
+// a direct request to it returns 403), and linking our own copy of
+// copyrighted FCA/ASIC content would go against the whole reasoning in
+// SOURCES.md for not redistributing it. Most FCA/ASIC docs have no stable
+// permanent URL, so those fall back to the regulator's own search page.
+const SOURCE_LINKS = {
+  'payment-services-electronic-money-approach.pdf':
+    { url: 'https://www.fca.org.uk/publication/finalised-guidance/fca-approach-payment-services-electronic-money-2017.pdf', direct: true },
+  'ps25-12.pdf':
+    { url: 'https://www.fca.org.uk/publications/policy-statements/ps25-12-changes-safeguarding-regime-payments-and-e-money-firms', direct: true },
+  'rg271.pdf':
+    { url: 'https://asic.gov.au/regulatory-resources/find-a-document/regulatory-guides/rg-271-internal-dispute-resolution', direct: true },
+};
+
+function sourceLinkFor(filename, jurisdiction) {
+  if (SOURCE_LINKS[filename]) return SOURCE_LINKS[filename];
+  const fallback = jurisdiction === 'AU' ? ASIC_FINDER : FCA_SEARCH;
+  return { url: fallback, direct: false };
+}
 
 $('askBtn').addEventListener('click', async () => {
   if (!window.RAG_CONFIG || !window.RAG_CONFIG.apiUrl || !window.RAG_CONFIG.apiKey) {
@@ -236,12 +262,16 @@ function showResult(data) {
   });
   $('answerText').textContent = renumberedAnswer;
 
-  $('sources').innerHTML = docsInOrder.map((d) => `
+  $('sources').innerHTML = docsInOrder.map((d) => {
+    const link = sourceLinkFor(d.filename, d.jurisdiction);
+    const label = link.direct ? escapeHtml(d.filename) : `${escapeHtml(d.filename)} (search)`;
+    return `
     <li>
-      <span>[${d.newNum}] ${escapeHtml(d.filename)}</span>
+      <span>[${d.newNum}] <a href="${link.url}" target="_blank" rel="noopener noreferrer">${label}</a></span>
       <span class="jur-tag ${d.jurisdiction.toLowerCase()}">${escapeHtml(d.jurisdiction)}${d.bestScore != null ? ' &middot; best ' + d.bestScore.toFixed(3) : ''}</span>
     </li>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function escapeHtml(str) {
