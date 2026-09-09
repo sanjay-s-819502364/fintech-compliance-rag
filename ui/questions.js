@@ -1,0 +1,37 @@
+// Copied from eval/eval-questions.json (id, category, question,
+// expected_jurisdiction only — the answer-key fields aren't needed here).
+// Plain JS, not fetched JSON, so this works identically whether the page is
+// opened via file:// or a local server — no CORS/relative-path issues.
+// If eval/eval-questions.json changes, this needs updating by hand to match.
+window.EVAL_QUESTIONS = [
+  { id: "Q01", category: "factual_single_doc", question: "What is the maximum period a payment service provider has to respond to a complaint in exceptional circumstances beyond its control?", expected_jurisdiction: "UK" },
+  { id: "Q02", category: "factual_single_doc", question: "Which version of the Payment Services and Electronic Money Approach Document is current, and when was it published?", expected_jurisdiction: "UK" },
+  { id: "Q03", category: "factual_single_doc", question: "Which types of business is the FCA Approach Document aimed at?", expected_jurisdiction: "UK" },
+  { id: "Q04", category: "factual_single_doc", question: "Which sourcebooks contain the FCA rules on safeguarding and resolution packs?", expected_jurisdiction: "UK" },
+  { id: "Q05", category: "factual_single_doc", question: "What is the Voluntary Jurisdiction and who can join it?", expected_jurisdiction: "UK" },
+  { id: "Q06", category: "factual_single_doc", question: "What must a financial firm do to acknowledge a complaint under ASIC's internal dispute resolution requirements?", expected_jurisdiction: "AU" },
+  { id: "Q07", category: "factual_single_doc", question: "What time limits apply to non-superannuation complaints under the AFCA Rules?", expected_jurisdiction: "AU" },
+  { id: "Q08", category: "factual_single_doc", question: "What are the strong customer authentication exemptions for contactless payments?", expected_jurisdiction: "UK" },
+  { id: "Q09", category: "factual_single_doc", question: "What does the guidance say about terminating framework contracts?", expected_jurisdiction: "UK" },
+  { id: "Q10", category: "factual_single_doc", question: "What is the risk-based approach to payments introduced by the Payment Services (Amendment) Regulations 2024?", expected_jurisdiction: "UK" },
+  { id: "Q11", category: "jurisdiction_specific", question: "What are the FCA requirements for complaint handling timeframes?", expected_jurisdiction: "UK" },
+  { id: "Q12", category: "jurisdiction_specific", question: "What are ASIC's requirements for internal dispute resolution timeframes?", expected_jurisdiction: "AU" },
+  { id: "Q13", category: "jurisdiction_specific", question: "What are the UK safeguarding requirements for customer funds held by an e-money institution?", expected_jurisdiction: "UK" },
+  { id: "Q14", category: "jurisdiction_specific", question: "What are the Australian licensing requirements for a limited AFS licence?", expected_jurisdiction: "AU" },
+  { id: "Q15", category: "jurisdiction_specific", question: "What does the FCA expect regarding operational resilience for cryptoasset firms?", expected_jurisdiction: "UK" },
+  { id: "Q16", category: "jurisdiction_specific", question: "How does the Consumer Duty apply to cryptoasset firms?", expected_jurisdiction: "UK" },
+  { id: "Q17", category: "cross_jurisdiction_bait", question: "What are the timeframes for responding to a customer complaint?", expected_jurisdiction: "AMBIGUOUS" },
+  { id: "Q18", category: "cross_jurisdiction_bait", question: "How long do we have to acknowledge receipt of a complaint?", expected_jurisdiction: "AMBIGUOUS" },
+  { id: "Q19", category: "cross_jurisdiction_bait", question: "What are our obligations when outsourcing a critical function to a third party?", expected_jurisdiction: "AMBIGUOUS" },
+  { id: "Q20", category: "cross_jurisdiction_bait", question: "What must we do to become licensed before we can operate?", expected_jurisdiction: "AMBIGUOUS" },
+  { id: "Q21", category: "jurisdiction_specific", question: "How must customer funds be safeguarded?", expected_jurisdiction: "UK" },
+  { id: "Q22", category: "cross_jurisdiction_bait", question: "What are the rules on conduct when dealing with retail customers?", expected_jurisdiction: "AMBIGUOUS" },
+  { id: "Q23", category: "multi_hop", question: "Which chapters of the Approach Document were changed by the May 2026 safeguarding updates, and what do those changes cover?", expected_jurisdiction: "UK" },
+  { id: "Q24", category: "multi_hop", question: "How do the FCA and ASIC complaint response timeframes differ?", expected_jurisdiction: "BOTH" },
+  { id: "Q25", category: "multi_hop", question: "What changed between version 6 and version 8 of the Approach Document?", expected_jurisdiction: "UK" },
+  { id: "Q26", category: "multi_hop", question: "If a firm operates under the temporary permissions regime, which parts of the payment services rules apply to it?", expected_jurisdiction: "UK" },
+  { id: "Q27", category: "unanswerable", question: "What are the Monetary Authority of Singapore's requirements for payment institution licensing?", expected_jurisdiction: "NONE" },
+  { id: "Q28", category: "unanswerable", question: "What is the maximum penalty for breaching safeguarding requirements?", expected_jurisdiction: "NONE" },
+  { id: "Q29", category: "unanswerable", question: "How many payment institutions were authorised by the FCA in 2025?", expected_jurisdiction: "NONE" },
+  { id: "Q30", category: "unanswerable", question: "What are the FCA's requirements for cryptoasset custody wallets under the proposed 2027 regime?", expected_jurisdiction: "NONE" },
+];
